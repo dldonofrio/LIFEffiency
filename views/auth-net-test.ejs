@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Payment Form</title>
+</head>
+
+<body>
+
+<script type="text/javascript"
+    src="https://jstest.authorize.net/v3/AcceptUI.js"
+    charset="utf-8">
+</script>
+
+<form id="paymentForm"
+    method="POST"
+    action="/auth">
+    <input type="hidden" name="dataValue" id="dataValue" />
+    <input type="hidden" name="dataDescriptor" id="dataDescriptor" />
+    <input type="hidden" name="_id" value= <%=transaction_id%> />
+    <button type="button"
+        class="AcceptUI"
+        data-billingAddressOptions='{"show":true, "required":true}' 
+        data-apiLoginID="59Yk6CJp3d" 
+        data-clientKey="4W699G9HQvmMDKxArqx3gjXqf6ZA76Uh3PuBR4rXfcN82xxJxS62K2XvDna4yrFS"
+        data-acceptUIFormBtnTxt="Submit" 
+        data-acceptUIFormHeaderTxt="Card Information" 
+        data-responseHandler="responseHandler">Pay
+    </button>
+</form>
+
+<script type="text/javascript">
+
+function responseHandler(response) {
+    if (response.messages.resultCode === "Error") {
+        var i = 0;
+        while (i < response.messages.message.length) {
+            console.log(
+                response.messages.message[i].code + ": " +
+                response.messages.message[i].text
+            );
+            i = i + 1;
+        }
+    } else {
+        paymentFormUpdate(response.opaqueData);
+    }
+}
+
+
+function paymentFormUpdate(opaqueData) {
+    document.getElementById("dataDescriptor").value = opaqueData.dataDescriptor;
+    document.getElementById("dataValue").value = opaqueData.dataValue;
+
+    // If using your own form to collect the sensitive data from the customer,
+    // blank out the fields before submitting them to your server.
+    // document.getElementById("cardNumber").value = "";
+    // document.getElementById("expMonth").value = "";
+    // document.getElementById("expYear").value = "";
+    // document.getElementById("cardCode").value = "";
+
+    document.getElementById("paymentForm").submit();
+}
+</script>
+
+</body>
+</html>
